@@ -4,3 +4,4 @@ __pycache__/
 output/
 .DS_Store
 *.egg-info/
+convertible_tool/data/history.csv
