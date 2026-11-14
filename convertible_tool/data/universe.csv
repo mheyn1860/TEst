@@ -1,0 +1,15 @@
+id,issuer,isin,stock_ticker,currency,country,sector,coupon,coupon_freq,maturity,conversion_price,redemption,credit_spread_bp,dividend_yield,call_date,call_price,put_date,put_price,verified
+DHER_2030,Delivery Hero,,DHER.DE,EUR,DE,Consumer,3.25,2,2030-02-21,60.00,100,450,0.000,2028-03-01,100,,,false
+ZAL_2029,Zalando,,ZAL.DE,EUR,DE,Consumer,0.625,1,2029-08-06,70.00,100,220,0.000,2027-08-27,100,,,false
+TEG_2030,TAG Immobilien,,TEG.DE,EUR,DE,Real Estate,0.625,1,2030-03-11,20.00,100,200,0.020,2028-04-01,100,,,false
+LEG_2031,LEG Immobilien,,LEG.DE,EUR,DE,Real Estate,1.00,1,2031-09-04,120.00,100,170,0.035,2029-09-25,100,,,false
+RHM_2030,Rheinmetall,,RHM.DE,EUR,DE,Industrials,2.25,1,2030-02-07,600.00,100,120,0.005,2028-03-01,100,,,false
+LHA_2028,Deutsche Lufthansa,,LHA.DE,EUR,DE,Industrials,2.00,1,2028-11-17,10.00,100,200,0.030,2026-12-08,100,,,false
+ENR_2030,Siemens Energy,,ENR.DE,EUR,DE,Energy,5.625,2,2030-09-14,40.00,100,180,0.000,2028-10-05,100,,,false
+SAF_2027,Safran,,SAF.PA,EUR,FR,Aerospace,0.00,1,2027-04-01,200.00,100,90,0.010,,,,,false
+SU_2030,Schneider Electric,,SU.PA,EUR,FR,Industrials,1.625,1,2030-06-28,280.00,100,80,0.015,2028-07-19,100,,,false
+SPIE_2028,Spie,,SPIE.PA,EUR,FR,Industrials,2.00,1,2028-01-17,32.00,100,200,0.020,2026-02-07,100,,,false
+PRY_2028,Prysmian,,PRY.MI,EUR,IT,Industrials,0.00,1,2028-07-01,65.00,100,130,0.010,,,,,false
+NEXI_2028,Nexi,,NEXI.MI,EUR,IT,Financials,0.00,1,2028-02-24,15.00,100,250,0.000,,,,,false
+CLNX_2031,Cellnex Telecom,,CLNX.MC,EUR,ES,Telecom,0.75,1,2031-11-20,55.00,100,220,0.000,2029-12-10,100,,,false
+STM_2027,STMicroelectronics,,STMPA.PA,EUR,FR,Technology,0.00,1,2027-08-04,45.00,100,90,0.010,,,2026-08-04,100,false
