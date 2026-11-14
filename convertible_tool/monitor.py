@@ -101,8 +101,10 @@ def run(demo: bool = False, source: str = "csv", rf: float = 0.022, ids=None,
         except ImportError:
             pass
         if not demo:
+            # Historie: pro Tag und Bond nur der letzte Stand
             hist = DATA_DIR / "history.csv"
-            df.to_csv(hist, mode="a", header=not hist.exists(), index=False)
+            all_rows = pd.concat([pd.read_csv(hist), df]) if hist.exists() else df
+            all_rows.drop_duplicates(["valuation_date", "id"], keep="last").to_csv(hist, index=False)
     return df
 
 

@@ -30,3 +30,24 @@ und dann `verified=true` setzen. Credit Spreads sind Schätzwerte.
 ## Modellannahmen
 Flache Zins- und Spreadkurve, stetige Dividendenrendite, Aktie und Anleihe in gleicher Währung,
 Soft-Call als harter Call ab Call-Datum. Keine Anlageberatung.
+
+## Web-Oberfläche
+
+```bash
+streamlit run app.py                      # http://localhost:8501
+CB_APP_PASSWORD=geheim streamlit run app.py   # mit Login
+```
+
+Tabs: **Übersicht** (Tabelle, Filter, Delta-vs-Prämie, Rich/Cheap, Excel/CSV-Download),
+**Einzelanalyse** (Kennzahlen + Payoff-Profil Modellwert/Parität/Bond Floor mit Vola-Regler),
+**CB-Kurse erfassen** (Kurse eintippen oder CSV hochladen), **Stammdaten** (Universum bearbeiten).
+
+### Als eigene Website veröffentlichen
+- **Streamlit Community Cloud** (kostenlos): Repo verbinden, `app.py` als Einstiegspunkt,
+  Passwort unter *Settings → Secrets* als `password = "..."`. Optional App auf „privat“ stellen.
+- **Eigener Server / Cloud (Docker)**:
+  `docker build -t cb-monitor . && docker run -e CB_APP_PASSWORD=... -p 8501:8501 cb-monitor`
+  (z. B. auf Render, Fly.io, Azure App Service, Hetzner) – davor HTTPS über den Hoster oder einen Reverse-Proxy.
+
+Hinweis: Auf Hostern ohne persistente Festplatte gehen eingetragene Kurse/Stammdaten bei
+Neustarts verloren – dann CSVs im Repo pflegen oder eine Datenbank anbinden.

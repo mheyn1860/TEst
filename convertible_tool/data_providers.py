@@ -55,7 +55,8 @@ class YahooEquityProvider:
         import yfinance as yf
 
         data = yf.download(tickers, period="1y", interval="1d", auto_adjust=True,
-                           progress=False, group_by="ticker", threads=True)
+                           progress=False, group_by="ticker", threads=True,
+                           timeout=15)
         out: dict[str, EquitySnapshot] = {}
         for t in tickers:
             try:

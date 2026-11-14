@@ -136,12 +136,19 @@ def parity(cb: ConvertibleBond, stock_price: float) -> float:
 # ---------------------------------------------------------------------------
 def tf_price(cb: ConvertibleBond, mkt: MarketInputs, steps: int = 300) -> float:
     """Theoretischer Dirty-Preis pro 100 Nominal."""
+    return _tf_tree(cb, mkt, steps)[0]
+
+
+def _tf_tree(cb: ConvertibleBond, mkt: MarketInputs, steps: int = 300) -> tuple[float, float, float]:
+    """(Preis, dV/dS, d²V/dS²) – Greeks direkt aus den Knoten bei Schritt 2,
+    damit kein Gitterrauschen durch Kurs-Bumps entsteht."""
     S0, sigma, r = mkt.stock_price, max(mkt.volatility, 1e-4), mkt.risk_free
     q = cb.dividend_yield
     cs = cb.credit_spread_bp / 1e4
     T = _yf(mkt.valuation_date, cb.maturity)
     if T <= 0:
-        return max(parity(cb, S0), cb.redemption)
+        return max(parity(cb, S0), cb.redemption), float(cb.conversion_ratio * (S0 * cb.conversion_ratio > cb.redemption)), 0.0
+    steps = max(steps, 3)
 
     dt = T / steps
     u = math.exp(sigma * math.sqrt(dt))
@@ -201,21 +208,25 @@ def tf_price(cb: ConvertibleBond, mkt: MarketInputs, steps: int = 300) -> float:
         E = np.where(voluntary, conv, E)
         B = np.where(voluntary, 0.0, B)
 
-    return float(E[0] + B[0])
+        if n == 2:
+            S2, V2 = S.copy(), E + B
+
+    d_up = (V2[0] - V2[1]) / (S2[0] - S2[1])
+    d_dn = (V2[1] - V2[2]) / (S2[1] - S2[2])
+    delta = (V2[0] - V2[2]) / (S2[0] - S2[2])
+    gamma = (d_up - d_dn) / (0.5 * (S2[0] - S2[2]))
+    return float(E[0] + B[0]), float(delta), float(gamma)
 
 
 # ---------------------------------------------------------------------------
 # Greeks & implizite Vola
 # ---------------------------------------------------------------------------
 def greeks(cb: ConvertibleBond, mkt: MarketInputs, steps: int = 300) -> dict:
-    base = tf_price(cb, mkt, steps)
-    h = mkt.stock_price * 0.01
+    base, dV_dS, d2V_dS2 = _tf_tree(cb, mkt, steps)
 
     def with_(**kw):
         return MarketInputs(**{**mkt.__dict__, **kw})
 
-    up = tf_price(cb, with_(stock_price=mkt.stock_price + h), steps)
-    dn = tf_price(cb, with_(stock_price=mkt.stock_price - h), steps)
     v_up = tf_price(cb, with_(volatility=mkt.volatility + 0.01), steps)
 
     cs_orig = cb.credit_spread_bp
@@ -223,12 +234,12 @@ def greeks(cb: ConvertibleBond, mkt: MarketInputs, steps: int = 300) -> dict:
     cs_up = tf_price(cb, mkt, steps)
     cb.credit_spread_bp = cs_orig
 
-    dV_dS = (up - dn) / (2 * h)
     return {
         "model_price": base,
         # Delta als Anteil der Parität (0..1), branchenüblich
         "delta": dV_dS / cb.conversion_ratio,
-        "gamma": (up - 2 * base + dn) / (h ** 2) / cb.conversion_ratio * mkt.stock_price / 100,
+        # Gamma: Delta-Änderung je +1 % Aktienkurs
+        "gamma": d2V_dS2 / cb.conversion_ratio * mkt.stock_price * 0.01,
         "vega": v_up - base,                      # Punkte je 1 Vol-Punkt
         "credit_sens_10bp": cs_up - base,         # Punkte je +10bp Spread
     }

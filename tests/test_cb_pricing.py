@@ -64,3 +64,10 @@ def test_analyse_fields():
     assert 0 < res["delta"] < 1
     assert res["premium_pct"] == pytest.approx((105 / 100 - 1) * 100)
     assert 0 <= accrued_interest(b, VAL) < b.coupon
+
+
+def test_delta_bounded_and_monotone_with_call():
+    b = cb(call_date=date(2027, 1, 1), call_price=100, coupon=3.0, coupon_freq=2)
+    deltas = [analyse(b, mkt(S), steps=200)["delta"] for S in (20, 35, 50, 65, 80)]
+    assert all(-0.01 <= d <= 1.01 for d in deltas)
+    assert deltas == sorted(deltas)
